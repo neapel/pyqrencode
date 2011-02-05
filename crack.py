@@ -109,5 +109,5 @@ if __name__ == '__main__':
 	c.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
 	c.set_line_width(0.1)
 
-	for i in range(100):
-		render(c, qrencode.encode('This is a test-string with some data.'))
+	#for i in range(100):
+	render(c, qrencode.encode('This is a test-string with some data.'))
