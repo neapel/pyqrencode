@@ -95,9 +95,9 @@ cdef inline int px(int x, int y, int w, unsigned char *data):
 
 
 
-def encode_path(context, text, int ec_level=ECC_MEDIUM, int version=0):
+def points(text, int ec_level=ECC_MEDIUM, int version=0):
 	'''
-	renders the QR code as a path to the given cairo context.
+	encodes the given text as a QR code and returns a list of points
 	Optimizes the path using Crack Code, so there are useful outlines.
 	'''
 
@@ -108,15 +108,17 @@ def encode_path(context, text, int ec_level=ECC_MEDIUM, int version=0):
 	cdef unsigned char *got = <unsigned char *> malloc(w * w)
 	memset(got, 1, w * w)
 
-	cdef int x, x0, y, y0, last, cur
+	cdef int x, x0, y, y0, last_last, last, cur
 
-	context.new_path()
+	lines = []
 
 	for x0 from 0 <= x0 < w:
 		for y0 from 0 <= y0 < w:
+			# find next start point
 			if got[x0 + y0 * w] and px(x0 - 1, y0, w, data) and not px(x0, y0, w, data):
 				line = []
 
+				last_last = 0
 				last = S
 				cur = S
 				x = x0
@@ -147,20 +149,63 @@ def encode_path(context, text, int ec_level=ECC_MEDIUM, int version=0):
 						else: cur = E
 
 					# Append to list
-					if len(line) > 0 and line[-1][2] == last:
-						line[-1] = (x, y, last)
+					if last_last == last:
+						line[-1] = (x, y)
 					else:
-						line.append((x, y, last))
+						line.append((x, y))
+						last_last = last
 
 					last = cur
 
-				# draw group:
-				if line:
-					points = iter(line)
-					context.move_to(*points.next()[:2])
-					for x, y, _ in points:
-						context.line_to(x, y)
-					context.close_path()
+				if len(line) > 1:
+					lines.append(line)
 
 	free(got)
 	free(c)
+
+	return lines, w
+
+
+
+
+def path(context, double size, text, int ec_level=ECC_MEDIUM, int version=0):
+	'''
+	draws the QR code as a path to the given cairo context
+	'''
+
+	if size == 0:
+		raise ValueError('size must be a number other than 0')
+
+	lines, w = points(text, ec_level, version)
+
+	context.save()
+	border = 4
+	f = size / (w + 2 * border)
+	context.scale(f, f)
+	context.translate(border, border)
+	context.new_path()
+
+	for line in lines:
+		_points = iter(line)
+		context.move_to(*_points.next())
+		for p in _points:
+			context.line_to(*p)
+		context.close_path()
+
+	context.restore()
+
+
+
+def render(context, double size, text, int ec_level=ECC_MEDIUM, int version=0):
+	'''
+	draws the QR code in black on a white background at (0,0)--(size, size)
+	'''
+
+	context.save()
+	context.rectangle(0, 0, size, size)
+	context.set_source_rgba(1, 1, 1, 1)
+	context.fill()
+	path(context, size, text, ec_level, version)
+	context.set_source_rgba(0, 0, 0, 1)
+	context.fill()
+	context.restore()
