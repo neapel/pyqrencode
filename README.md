@@ -4,12 +4,12 @@ This fork doesn't output a PIL image, but allows accessing pixels as nested tupl
 The vector generation uses a crack chain-code to generate a simpler path.
 
 
-Python bindings for libqrencode (http://fukuchi.org/works/qrencode/index.en.html) using Cython
+Python bindings for [libqrencode](http://fukuchi.org/works/qrencode/index.en.html) using Cython
 
 
 Credit and inspiration to:
 
- - http://pyqrcode.sourceforge.net/
+ - [http://pyqrcode.sourceforge.net/]
  (this is essentially a cleaned up version of the Encoder, eliminating all the Java dependencies)
  
  - [libqrencode](http://megaui.net/fukuchi/works/qrencode/index.en.html), by Fukuchi Kentaro
