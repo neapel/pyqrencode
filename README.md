@@ -9,8 +9,7 @@ Python bindings for [libqrencode](http://fukuchi.org/works/qrencode/index.en.htm
 
 Credit and inspiration to:
 
- - [http://pyqrcode.sourceforge.net/]
- (this is essentially a cleaned up version of the Encoder, eliminating all the Java dependencies)
+ - [pyqrcode](http://pyqrcode.sourceforge.net/) (this is essentially a cleaned up version of the Encoder, eliminating all the Java dependencies)
  
  - [libqrencode](http://megaui.net/fukuchi/works/qrencode/index.en.html), by Fukuchi Kentaro
 
