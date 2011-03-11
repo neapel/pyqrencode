@@ -7,6 +7,7 @@ Python bindings for libqrencode (http://fukuchi.org/works/qrencode/index.en.html
 
 
 Credit and inspiration to:
+
  - http://pyqrcode.sourceforge.net/
  (this is essentially a cleaned up version of the Encoder, eliminating all the Java dependencies)
  
@@ -23,7 +24,7 @@ Pre-requisites on all platforms:
 
 Installation
 ------------
-$ python setup.py install
+    $ python setup.py install
 
 
 
@@ -32,12 +33,12 @@ Usage
 
 See test.py:
 
-     import qrencode
+    import qrencode
 
-     # to render a QR code including white quiet margin:
-     qrencode.render(cairo_context, size_in_cairo_units, some_string)
+    # to render a QR code including white quiet margin:
+    qrencode.render(cairo_context, size_in_cairo_units, some_string)
 
-     # to get the path with useful outlines:
-     qrencode.path(cairo_context, size_in_cairo_units, some_string)
-     cairo_context.stroke_preserve()
-     cairo_context.fill()
+    # to get the path with useful outlines:
+    qrencode.path(cairo_context, size_in_cairo_units, some_string)
+    cairo_context.stroke_preserve()
+    cairo_context.fill()
