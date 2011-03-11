@@ -1,6 +1,7 @@
 
 This fork doesn't output a PIL image, but allows accessing pixels as nested tuples, or more conveniently, draw the QR code to a cairo surface as a vector graphic. (Although it would be more space efficient as a pixel surface with nearest neighbor interpolation)
 
+The vector generation uses a crack chain-code to generate a simpler path.
 
 
 Python bindings for libqrencode (http://fukuchi.org/works/qrencode/index.en.html) using Cython
