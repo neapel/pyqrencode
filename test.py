@@ -43,3 +43,10 @@ if __name__ == '__main__':
 			c.arc(x, y, 0.2, 0, 2 * math.pi)
 	c.set_source_rgba(0,1,0,1)
 	c.fill()
+
+	qrencode.to_image(N).save('test-0.png')
+	qrencode.to_image(N, size=480).save('test-1.png')
+	qrencode.to_image(N, size=480).save('test-1-o.png', optimize=True)
+	qrencode.to_image(N, size=480).save('test-1-b.png', bits=1)
+	qrencode.to_image(N, scale=2).save('test-2.png')
+

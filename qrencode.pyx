@@ -83,6 +83,54 @@ def encode(text, int ec_level=ECC_MEDIUM, int version=0):
 
 
 
+cdef list THRESH = [1, 0] * 0x80
+
+
+def to_image(text, int ec_level=ECC_MEDIUM, int version=0, int size=0, int scale=0):
+	'''
+	generates a QR code from the given string and returns a PIL Image.
+	`size` sets the target width & height. The quiet area might be increased.
+	`scale` sets the pixel size directly.
+	'''
+	if size and scale:
+		raise ValueError, 'Define either size or scale'
+
+	cdef QRcode *c = encode_string(text, ec_level, version)
+	cdef int w = c.width
+	cdef bytes data = (<char *>c.data)[:w * w]
+	border_w = w + 2 * 4
+
+	from PIL import Image, ImageOps
+	im = Image.fromstring('L', (w, w), data, 'raw', 'L')
+	im = im.point(THRESH, '1')
+
+	if scale > 0:
+		# scale factor
+		im = ImageOps.expand(im, border=4, fill=1)
+		w = border_w * scale
+		im = im.resize((w, w))
+
+	elif size > border_w:
+		# target size
+
+		im = ImageOps.expand(im, border=4, fill=1)
+
+		scale = max(1, int(0.5 + 1.0 * size / border_w))
+		w *= scale
+		im = im.resize((w, w))
+		l = (size - w) / 2
+		r = size - l - w
+		im = ImageOps.expand(im, border=(l, l, r, r), fill=1)
+
+	else:
+		# no change
+		im = ImageOps.expand(im, border=4, fill=1)
+
+	return im
+
+
+
+
 
 
 cdef int N = 1, E = 2, S = 3, W = 4
