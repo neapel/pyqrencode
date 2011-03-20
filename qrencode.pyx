@@ -82,18 +82,19 @@ def encode(text, int ec_level=ECC_MEDIUM, int version=0):
 	return rows
 
 
-
 cdef list THRESH = [1, 0] * 0x80
 
 
-def to_image(text, int ec_level=ECC_MEDIUM, int version=0, int size=0, int scale=0):
+def to_image(text, int ec_level=ECC_MEDIUM, int version=0, int size=0, int max_size=0, int scale=0):
 	'''
 	generates a QR code from the given string and returns a PIL Image.
 	`size` sets the target width & height. The quiet area might be increased.
-	`scale` sets the pixel size directly.
+	`max_size` sets the target maximum width & height. The quiet area will be minimal, the resulting image might be smaller.
+	If the size specified is smaller than scale=1, the resulting image will be bigger (depending on the version)
+	`scale` sets the pixel size directly. The resulting image size depends on the version. The quiet area will be minimal.
 	'''
-	if size and scale:
-		raise ValueError, 'Define either size or scale'
+	if len(filter(None, (size, scale, max_size))) > 1:
+		raise ValueError, 'Define either size, max_size or scale > 0'
 
 	cdef QRcode *c = encode_string(text, ec_level, version)
 	cdef int w = c.width
@@ -110,17 +111,18 @@ def to_image(text, int ec_level=ECC_MEDIUM, int version=0, int size=0, int scale
 		w = border_w * scale
 		im = im.resize((w, w))
 
-	elif size > border_w:
+	elif size > border_w or max_size > border_w:
 		# target size
-
 		im = ImageOps.expand(im, border=4, fill=1)
 
-		scale = max(1, int(0.5 + 1.0 * size / border_w))
+		scale = max(1, int(0.5 + 1.0 * (size + max_size) / border_w))
 		w *= scale
 		im = im.resize((w, w))
-		l = (size - w) / 2
-		r = size - l - w
-		im = ImageOps.expand(im, border=(l, l, r, r), fill=1)
+
+		if size > border_w:
+			l = (size - w) / 2
+			r = size - l - w
+			im = ImageOps.expand(im, border=(l, l, r, r), fill=1)
 
 	else:
 		# no change

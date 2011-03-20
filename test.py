@@ -46,7 +46,6 @@ if __name__ == '__main__':
 
 	qrencode.to_image(N).save('test-0.png')
 	qrencode.to_image(N, size=480).save('test-1.png')
-	qrencode.to_image(N, size=480).save('test-1-o.png', optimize=True)
-	qrencode.to_image(N, size=480).save('test-1-b.png', bits=1)
-	qrencode.to_image(N, scale=2).save('test-2.png')
+	qrencode.to_image(N, max_size=480).save('test-2.png')
+	qrencode.to_image(N, scale=2).save('test-3.png')
 
